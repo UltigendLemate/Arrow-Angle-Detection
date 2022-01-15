@@ -13,7 +13,7 @@ while True:
     opening = cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernel)
     closing = cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel)
 
-    erosion = cv2.erode(mask,kernel,iterations=2)
+    erosion = cv2.erode(mask,kernel,iterations=1)
     dilation = cv2.dilate(mask,kernel,iterations=1)
 
     cv2.imshow('frame',frame)

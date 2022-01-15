@@ -16,6 +16,8 @@ while True:
     cv2.imshow('laplacian',laplacian)
     cv2.imshow('sobelx',sobelx)
     cv2.imshow('sobely',sobely)
+    #APPROXPOLYDP
+    # contours
 
 
     k = cv2.waitKey(5)
