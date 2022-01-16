@@ -72,13 +72,25 @@ def getcont(img,imgcnt):
                 mp,sp,dp = findit(approx.tolist())
                 vertex_x,vertex_y = approx[mp][0]
                 other_x,other_y = (approx[sp][0] + approx[dp][0])/2
-                cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
+                # cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
                 try:
                     m= (other_y - vertex_y) /(other_x - vertex_x)
                 except ZeroDivisionError:
                     m = (other_y - vertex_y) /(other_x - vertex_x + 0.1)
 
-                angle = math.atan(m)*180/PI
+
+                PI = 3.14159265
+                M1 = m
+                M2= 0.1/999
+                
+                
+                angle = (M2 - M1) / (1 + M1 * M2)
+            
+                
+                ret = math.atan(angle)
+                angle = (ret * 180) / PI
+
+                # angle = math.atan(m)*180/PI
                 # if angle>0 :
                 #     angle = 360 - abs(math.atan(m)*180/PI)
                 # else:
