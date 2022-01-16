@@ -2,6 +2,51 @@ import cv2
 import numpy as np
 import math
 from math import pi as PI
+
+
+
+#functions to get arrow header
+def getAng(a, b, c):
+
+    ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
+    return ang + 360 if ang < 0 else ang
+
+def findit(approx):
+    yo = approx.copy()
+    yo.append(yo[0])
+    yo.append(yo[1])
+    yo.append(yo[2])
+    yo.append(yo[3])
+    ans={}
+    for i in range(0,7,1):
+         ang = getAng(yo[i][0],yo[i+1][0],yo[i+2][0]) 
+         if i == 6:
+             j= 0
+         else:
+             j = i+1
+         ans[j] = ang
+    temp = max(ans.values())
+    res = [key for key in ans if ans[key] == temp]
+
+    if res[0]>=3:
+        one = res[0]
+        two = res[0]-4
+        three = res[0] -3
+    else:
+        one = res[0]
+        two = res[0]+3
+        three = res[0] +4
+
+    return one,two,three
+
+
+
+
+
+
+##other functions
+
+
 def empty(a):
     pass
 
@@ -23,17 +68,26 @@ def getcont(img,imgcnt):
             # print(approx)
             cv2.putText(imageContour,"Points : " + str(len(approx)),(10,450),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,255,0),2)
             if len(approx) == 7:
-                vertex_x,vertex_y = approx[0][0]
-                other_x,other_y = (approx[4][0] + approx[3][0])/2
-                cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
 
-                m= (other_y - vertex_y) /(other_x - vertex_x)
+                mp,sp,dp = findit(approx.tolist())
+                vertex_x,vertex_y = approx[mp][0]
+                other_x,other_y = (approx[sp][0] + approx[dp][0])/2
+                cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
+                try:
+                    m= (other_y - vertex_y) /(other_x - vertex_x)
+                except ZeroDivisionError:
+                    m = (other_y - vertex_y) /(other_x - vertex_x + 0.1)
 
                 angle = math.atan(m)*180/PI
-                if angle>0 :
-                    angle = 360 - abs(math.atan(m)*180/PI)
+                # if angle>0 :
+                #     angle = 360 - abs(math.atan(m)*180/PI)
+                # else:
+                #     angle = abs(angle)
+
+                if angle>0:
+                    angle = 90 - abs(angle)
                 else:
-                    angle = abs(angle)
+                    angle = 90+abs(angle)
                 
                 cv2.putText(imageContour,"Points : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,255,0),2)
 
