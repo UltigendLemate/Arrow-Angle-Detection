@@ -90,19 +90,19 @@ def getcont(img,imgcnt):
                 except ZeroDivisionError:
                     m = (other_y - vertex_y) /(other_x - vertex_x + 0.001)
 
-                print(vertex_x,vertex_y,other_x,other_y)
+
                 PI = 3.14159265
                 # M1 = m
                 # M2= 999**9/10*(-10)
 
-                # myatan = lambda x,y: np.pi*(1.0-0.5*(1+np.sign(x))*(1-np.sign(y**2))\
-                # -0.25*(2+np.sign(x))*np.sign(y))\
-                # -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
+                myatan = lambda x,y: np.pi*(1.0-0.5*(1+np.sign(x))*(1-np.sign(y**2))\
+                -0.25*(2+np.sign(x))*np.sign(y))\
+                -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
 
 
                 dx = other_x - vertex_x
                 dy = -(other_y - vertex_y)
-                # angle = myatan(dx, dy)
+                angle = myatan(dx, dy)
                 # angle = math.degrees(theta)  # angle is in (-180, 180]
                 # if angle < 0:
                 #     angle = 360 + angle
@@ -114,25 +114,23 @@ def getcont(img,imgcnt):
                 # angle = (M2 - M1) / (1 + M1 * M2)
             
                 
-                angle = np.arctan(m)
+                # angle = np.arctan(m)
                 # # ret = np.arctan(angle)
 
                 # angle = angle_trunc(math.atan2(dx,dy))
                 # angle= math.atan2(other_y - vertex_y, other_x - vertex_x)
                 angle = (angle * 180) / PI
 
-                if angle <0:
-                    angle = 180 -abs(angle)
+                # if angle <0:
+                #     angle = 180 +abs(angle)
 
                 # angle = math.atan2(other_x,other_y) - math.atan2(vertex_x,vertex_y)
                 # angle = (angle * 180) / PI
 
                 # if angle>0:
-                #     angle = 90 + abs(angle)
-                # else:0
+                #     angle = 90 - abs(angle)
+                # else:
                 #     angle = 90+abs(angle)
-
-                print(180+angle)
                 
                 cv2.putText(imageContour,"Points : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
 
@@ -162,8 +160,9 @@ while True:
     upper_red = np.array([255,200,255])
     mask = cv2.inRange(hsv,lower_red,upper_red) #filtering out red color objects using a range
     kernel = np.ones((5,5),np.uint8) #declaring kernel for erosion,dilation,morphology
+    edges = cv2.Canny(mask,thresh1,thresh2) #getting the edges
     
-    erosion = cv2.erode(mask,kernel,iterations=1) #using erosion to reduce noise
+    erosion = cv2.dilate(edges,kernel,iterations=1) #using erosion to reduce noise
     # opening = cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernel) #eliminaing fake positives
     # closing = cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel) #eliminating fake negatives
 
@@ -174,7 +173,6 @@ while True:
 
     # kernel = np.ones((5,5))
 
-    edges = cv2.Canny(frame,thresh1,thresh2) #getting the edges
 
     # imgDil = cv2.dilate(edges,kernel,iterations=1)
 
@@ -184,9 +182,9 @@ while True:
 
     #SHOWING FRAMES
 
-    # cv2.imshow('dil',imgDil)
+    cv2.imshow('dil',erosion)
     cv2.imshow('cont',imageContour)
-    # cv2.imshow('edges',edges)
+    cv2.imshow('edges',edges)
     # cv2.imshow('original',frame)
 
 

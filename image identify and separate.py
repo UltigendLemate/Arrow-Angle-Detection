@@ -18,11 +18,11 @@ while True:
 
     cv2.imshow('frame',frame)
     cv2.imshow('opening',opening)
-    # cv2.imshow('closing',closing)
-    # cv2.imshow('dilation',dilation)
+    cv2.imshow('closing',closing)
+    cv2.imshow('dilation',dilation)
     cv2.imshow('erosion',erosion)
-    # cv2.imshow('mask',mask)
-    # cv2.imshow('res',res)
+    cv2.imshow('mask',mask)
+    cv2.imshow('res',res)
 
 
     k = cv2.waitKey(5)

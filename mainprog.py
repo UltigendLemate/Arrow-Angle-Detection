@@ -27,6 +27,8 @@ def getcont(img,imgcnt):
                 other_x,other_y = (approx[4][0] + approx[3][0])/2
                 cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
 
+                print(vertex_x,vertex_y,other_x,other_y)
+
                 m= (other_y - vertex_y) /(other_x - vertex_x)
 
                 angle = math.atan(m)*180/PI
@@ -34,6 +36,7 @@ def getcont(img,imgcnt):
                     angle = 360 - abs(math.atan(m)*180/PI)
                 else:
                     angle = abs(angle)
+                print(angle)
                 
                 cv2.putText(imageContour,"Points : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,255,0),2)
 

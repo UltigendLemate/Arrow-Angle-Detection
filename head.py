@@ -11,7 +11,7 @@ def getAng(a, b, c):
     
     PI = 3.14159265
      
-    angle = abs((M2 - M1) / (1 + M1 * M2))
+    angle = (M2 - M1) / (1 + M1 * M2)
  
     # Calculate tan inverse of the angle
     ret = math.atan(angle)
