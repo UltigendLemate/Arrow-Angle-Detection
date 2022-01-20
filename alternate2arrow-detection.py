@@ -11,21 +11,21 @@ from math import pi as PI
 # ------START------
 
 
-def ang(x1,y1,x2,y2):
-    import numpy as np
+# def ang(x1,y1,x2,y2):
+#     import numpy as np
     
 
-    a = np.array([x1,y1])
-    b = np.array([x2,y2])
-    c = np.array([abs(x1-x2),1])
+#     a = np.array([x1,y1])
+#     b = np.array([x2,y2])
+#     c = np.array([abs(x1-x2),1])
 
-    ba = a - b
-    bc = c - b
+#     ba = a - b
+#     bc = c - b
 
-    cosine_angle = np.dot(ba, bc) / (la.norm(ba) * la.norm(bc))
-    angle = np.arccos(cosine_angle)
+#     cosine_angle = np.dot(ba, bc) / (la.norm(ba) * la.norm(bc))
+#     angle = np.arccos(cosine_angle)
 
-    return (np.degrees(angle))
+#     return (np.degrees(angle))
 
 
 
