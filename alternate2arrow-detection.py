@@ -5,9 +5,30 @@ from math import pi as PI
 
 
 
+
 #functions to draw vertical line
 
 # ------START------
+
+
+def ang(x1,y1,x2,y2):
+    import numpy as np
+    
+
+    a = np.array([x1,y1])
+    b = np.array([x2,y2])
+    c = np.array([abs(x1-x2),1])
+
+    ba = a - b
+    bc = c - b
+
+    cosine_angle = np.dot(ba, bc) / (la.norm(ba) * la.norm(bc))
+    angle = np.arccos(cosine_angle)
+
+    return (np.degrees(angle))
+
+
+
 def getAng(a, b, c): #a = [1,2]
 
     ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
@@ -47,7 +68,8 @@ def findit(approx):
 #--------------END--------
 
 
-    
+# def fangle(x1,y1,x2,y2):
+#     return np.rad2deg(np.arctan2(y2-y1, x2 - x1))+180 
 
 ##other functions
 
@@ -90,19 +112,19 @@ def getcont(img,imgcnt):
                 except ZeroDivisionError:
                     m = (other_y - vertex_y) /(other_x - vertex_x + 0.001)
 
-                print(vertex_x,vertex_y,other_x,other_y)
+                # angle = fangle(vertex_x,vertex_y,other_x,other_y)
                 PI = 3.14159265
                 # M1 = m
                 # M2= 999**9/10*(-10)
 
-                # myatan = lambda x,y: np.pi*(1.0-0.5*(1+np.sign(x))*(1-np.sign(y**2))\
-                # -0.25*(2+np.sign(x))*np.sign(y))\
-                # -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
+                myatan = lambda x,y: np.pi*(1.0-0.5*(1+np.sign(x))*(1-np.sign(y**2))\
+                -0.25*(2+np.sign(x))*np.sign(y))\
+                -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
 
 
-                dx = other_x - vertex_x
-                dy = -(other_y - vertex_y)
-                # angle = myatan(dx, dy)
+                # dx = other_x - vertex_x
+                # dy = -(other_y - vertex_y)
+                # angle = np.arctan2(dx, dy)
                 # angle = math.degrees(theta)  # angle is in (-180, 180]
                 # if angle < 0:
                 #     angle = 360 + angle
@@ -117,27 +139,33 @@ def getcont(img,imgcnt):
                 angle = np.arctan(m)
                 # # ret = np.arctan(angle)
 
+                # angle = fangle()
+
                 # angle = angle_trunc(math.atan2(dx,dy))
                 # angle= math.atan2(other_y - vertex_y, other_x - vertex_x)
                 angle = (angle * 180) / PI
 
+               
+
+                # angle = math.atan2(other_x,other_y) - math.atan2(vertex_x,vertex_y)
+               
+
                 if angle <0:
                     angle = 180 -abs(angle)
 
-                # angle = math.atan2(other_x,other_y) - math.atan2(vertex_x,vertex_y)
-                # angle = (angle * 180) / PI
-
                 # if angle>0:
-                #     angle = 90 + abs(angle)
-                # else:0
-                #     angle = 90+abs(angle)
+                #     angle = abs(angle)
+                # else:
+                #     angle = 180-abs(angle)
 
-                print(180+angle)
+                # print(180+angle)
+
+                angle = round(angle,2)
                 
-                cv2.putText(imageContour,"Points : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
+                cv2.rectangle(imageContour,(5,0),(400,30),(0,0,0),-1)
+                cv2.putText(imageContour,"Angle : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
 
 # ---------------- END-----------
-
 
 
 #Main Program
