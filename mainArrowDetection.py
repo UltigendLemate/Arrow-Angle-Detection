@@ -5,9 +5,30 @@ from math import pi as PI
 
 
 
+
 #functions to draw vertical line
 
 # ------START------
+
+
+# def ang(x1,y1,x2,y2):
+#     import numpy as np
+    
+
+#     a = np.array([x1,y1])
+#     b = np.array([x2,y2])
+#     c = np.array([abs(x1-x2),1])
+
+#     ba = a - b
+#     bc = c - b
+
+#     cosine_angle = np.dot(ba, bc) / (la.norm(ba) * la.norm(bc))
+#     angle = np.arccos(cosine_angle)
+
+#     return (np.degrees(angle))
+
+
+
 def getAng(a, b, c): #a = [1,2]
 
     ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
@@ -47,7 +68,8 @@ def findit(approx):
 #--------------END--------
 
 
-    
+# def fangle(x1,y1,x2,y2):
+#     return np.rad2deg(np.arctan2(y2-y1, x2 - x1))+180 
 
 ##other functions
 
@@ -77,20 +99,20 @@ def getcont(img,imgcnt):
             # x_,y_,W,h = cv2.boundingRect(approx)
             # cv2.rectangle(imageContour, (x_,y_),(x_+w,y_+h),(0,255,0),10)
             # print(approx)
-            cv2.putText(imageContour,"Points : " + str(len(approx)),(10,450),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,255,0),2)
+            # cv2.putText(imageContour,"Points : " + str(len(approx)),(10,450),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,255,0),2)
             if len(approx) == 7:
 
                 mp,sp,dp = findit(approx.tolist())
                 vertex_x,vertex_y = approx[mp][0]
                 other_x,other_y = (approx[sp][0] + approx[dp][0])/2
                 # other_x,other_y = approx[sp][0]
-                cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
+                # cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)0
                 try:
                     m= (other_y - vertex_y) /(other_x - vertex_x)
                 except ZeroDivisionError:
                     m = (other_y - vertex_y) /(other_x - vertex_x + 0.001)
 
-
+                # angle = fangle(vertex_x,vertex_y,other_x,other_y)
                 PI = 3.14159265
                 # M1 = m
                 # M2= 999**9/10*(-10)
@@ -100,9 +122,9 @@ def getcont(img,imgcnt):
                 -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
 
 
-                dx = other_x - vertex_x
-                dy = -(other_y - vertex_y)
-                angle = myatan(dx, dy)
+                # dx = other_x - vertex_x
+                # dy = -(other_y - vertex_y)
+                # angle = np.arctan2(dx, dy)
                 # angle = math.degrees(theta)  # angle is in (-180, 180]
                 # if angle < 0:
                 #     angle = 360 + angle
@@ -114,28 +136,36 @@ def getcont(img,imgcnt):
                 # angle = (M2 - M1) / (1 + M1 * M2)
             
                 
-                # angle = np.arctan(m)
+                angle = np.arctan(m)
                 # # ret = np.arctan(angle)
+
+                # angle = fangle()
 
                 # angle = angle_trunc(math.atan2(dx,dy))
                 # angle= math.atan2(other_y - vertex_y, other_x - vertex_x)
                 angle = (angle * 180) / PI
 
-                # if angle <0:
-                #     angle = 180 +abs(angle)
+               
 
                 # angle = math.atan2(other_x,other_y) - math.atan2(vertex_x,vertex_y)
-                # angle = (angle * 180) / PI
+               
+
+                if angle <0:
+                    angle = 180 -abs(angle)
 
                 # if angle>0:
-                #     angle = 90 - abs(angle)
+                #     angle = abs(angle)
                 # else:
-                #     angle = 90+abs(angle)
+                #     angle = 180-abs(angle)
+
+                # print(180+angle)
+
+                angle = round(angle,2)
                 
-                cv2.putText(imageContour,"Points : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
+                cv2.rectangle(imageContour,(5,0),(190,30),(0,0,0),-1)
+                cv2.putText(imageContour,"Angle : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
 
 # ---------------- END-----------
-
 
 
 #Main Program
@@ -160,9 +190,8 @@ while True:
     upper_red = np.array([255,200,255])
     mask = cv2.inRange(hsv,lower_red,upper_red) #filtering out red color objects using a range
     kernel = np.ones((5,5),np.uint8) #declaring kernel for erosion,dilation,morphology
-    edges = cv2.Canny(mask,thresh1,thresh2) #getting the edges
     
-    erosion = cv2.dilate(edges,kernel,iterations=1) #using erosion to reduce noise
+    erosion = cv2.erode(mask,kernel,iterations=1) #using erosion to reduce noise
     # opening = cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernel) #eliminaing fake positives
     # closing = cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel) #eliminating fake negatives
 
@@ -173,6 +202,7 @@ while True:
 
     # kernel = np.ones((5,5))
 
+    edges = cv2.Canny(frame,thresh1,thresh2) #getting the edges
 
     # imgDil = cv2.dilate(edges,kernel,iterations=1)
 
@@ -182,9 +212,9 @@ while True:
 
     #SHOWING FRAMES
 
-    cv2.imshow('dil',erosion)
+    # cv2.imshow('dil',imgDil)
     cv2.imshow('cont',imageContour)
-    cv2.imshow('edges',edges)
+    # cv2.imshow('edges',edges)
     # cv2.imshow('original',frame)
 
 

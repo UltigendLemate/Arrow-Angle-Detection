@@ -1,31 +1,13 @@
+
+
 import cv2
 import numpy as np
+from math import atan2, cos, sin, sqrt, pi, trunc
 import math
-from math import pi as PI
 
 
 
 
-#functions to draw vertical line
-
-# ------START------
-
-
-# def ang(x1,y1,x2,y2):
-#     import numpy as np
-    
-
-#     a = np.array([x1,y1])
-#     b = np.array([x2,y2])
-#     c = np.array([abs(x1-x2),1])
-
-#     ba = a - b
-#     bc = c - b
-
-#     cosine_angle = np.dot(ba, bc) / (la.norm(ba) * la.norm(bc))
-#     angle = np.arccos(cosine_angle)
-
-#     return (np.degrees(angle))
 
 
 
@@ -68,161 +50,123 @@ def findit(approx):
 #--------------END--------
 
 
-# def fangle(x1,y1,x2,y2):
-#     return np.rad2deg(np.arctan2(y2-y1, x2 - x1))+180 
-
-##other functions
 
 
-def empty(a):
+
+
+
+
+
+
+
+
+
+def nothing():
     pass
 
+def isArrow(pts):
+    if(pts==7):  # arrow has 7 edge points
+        isArrow = True
+    else:
+        isArrow = False
+    return(isArrow)
 
-# def pts(ln):
-#     pass
+def isRed(val):
+    # print(val)
+    if(val<22 or val>160):  # hsv value of red is in this range
+        isRed = True
+    else:
+        isRed = False
+    return(isRed)
 
+def findAngle(pts, img):
 
-# Function to get the contours(corners), to plot the arrow and find the angle
+    myatan = lambda x,y: np.pi*(1.0-0.5*(1+np.sign(x))*(1-np.sign(y**2))\
+        -0.25*(2+np.sign(x))*np.sign(y))\
+        -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
 
-#----------START----------
+    sz = len(pts)
+    data_pts = np.empty((sz, 2), dtype=np.float64)
+    for i in range(data_pts.shape[0]):
+        data_pts[i,0] = pts[i,0,0]
+        data_pts[i,1] = pts[i,0,1]
+    # Perform PCA analysis
+    mean = np.empty((0))
+    mean, eigenvectors, eigenvalues = cv2.PCACompute2(data_pts, mean)
 
-def getcont(img,imgcnt):
-    contours,hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-    for cnt in contours:
-        area= cv2.contourArea(cnt)
-        areamin= cv2.getTrackbarPos('area','Parameters')
-        if area>areamin:
-            cv2.drawContours(imgcnt,cnt, -1,(0,255,255),7)
-            perimeter = cv2.arcLength(cnt,True)
-            approx=  cv2.approxPolyDP(cnt,0.02*perimeter,True)
-            # print(len(approx))
-            # x_,y_,W,h = cv2.boundingRect(approx)
-            # cv2.rectangle(imageContour, (x_,y_),(x_+w,y_+h),(0,255,0),10)
-            # print(approx)
-            cv2.putText(imageContour,"Points : " + str(len(approx)),(10,450),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,255,0),2)
-            if len(approx) == 7:
+    # angle = np.arctan2(eigenvectors[0,1], eigenvectors[0,0]) #angle is returned in radians 
+    # print("eigenvectors[0,1]    :   " + str(eigenvectors[0,1]))
+    # print("eigenvectors[0,0]    :   " + str(eigenvectors[0,0]))
 
-                mp,sp,dp = findit(approx.tolist())
-                vertex_x,vertex_y = approx[mp][0]
-                other_x,other_y = (approx[sp][0] + approx[dp][0])/2
-                # other_x,other_y = approx[sp][0]
-                cv2.line(imageContour,(vertex_x,vertex_y ),(int(other_x),int(other_y)),(0,0,0),3)
-                try:
-                    m= (other_y - vertex_y) /(other_x - vertex_x)
-                except ZeroDivisionError:
-                    m = (other_y - vertex_y) /(other_x - vertex_x + 0.001)
+    angle = myatan(eigenvectors[0,1], eigenvectors[0,0]) #angle is returned in radians 
+    angleDeg = angle * (180/np.pi)
+    angleDeg = trunc((10 ** 3)*angleDeg)/(10 ** 3)
 
-                # angle = fangle(vertex_x,vertex_y,other_x,other_y)
-                PI = 3.14159265
-                # M1 = m
-                # M2= 999**9/10*(-10)
+    return(angleDeg)
+ 
 
-                myatan = lambda x,y: np.pi*(1.0-0.5*(1+np.sign(x))*(1-np.sign(y**2))\
-                -0.25*(2+np.sign(x))*np.sign(y))\
-                -np.sign(x*y)*np.arctan((np.abs(x)-np.abs(y))/(np.abs(x)+np.abs(y)))
+def getContours(img, imgContour):
+    contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
+    for contour in contours:
+        area=cv2.contourArea(contour)
+        if(area>2000):
+            points = cv2.approxPolyDP(contour, 0.01 * cv2.arcLength(contour, True), True)
 
-                # dx = other_x - vertex_x
-                # dy = -(other_y - vertex_y)
-                # angle = np.arctan2(dx, dy)
-                # angle = math.degrees(theta)  # angle is in (-180, 180]
-                # if angle < 0:
-                #     angle = 360 + angle
-                # dot =other_x*vertex_x + other_y*vertex_y      # dot product
-                # det = other_x*vertex_y - other_y*vertex_x      # determinant
-                # angle = math.atan2(det, dot)
-                            
+            M = cv2.moments(contour)
+            if M['m00'] != 0.0:
+                x = int(M['m10']/M['m00'])
+                y = int(M['m01']/M['m00'])
+
+                hsv_frame = cv2.cvtColor(imgContour, cv2.COLOR_BGR2HSV)
+                pixel_center = hsv_frame[y, x]
+                hue_value = pixel_center[0]
+
+            if(isArrow(len(points)) and isRed(hue_value)):
+                # print(contour)
+                perimeter = cv2.arcLength(contour,True)
+                approx=  cv2.approxPolyDP(contour,0.02*perimeter,True)
+
+                if len(approx) == 7:
+                    mp,sp,dp = findit(approx.tolist())
+
+                    x5,y5 = approx[mp][0]
+                    x6,y6 = (approx[sp][0] + approx[dp][0])/2
+                    cv2.line(imgContour,(x5,y5),(x6,y6),(0,0,255),5)
+
+                cv2.drawContours(imgContour, contour, -1, (0,255,0), 3)
+                angle = findAngle(contour, imgContour)
                 
-                # angle = (M2 - M1) / (1 + M1 * M2)
-            
-                
-                angle = np.arctan(m)
-                # # ret = np.arctan(angle)
-
-                # angle = fangle()
-
-                # angle = angle_trunc(math.atan2(dx,dy))
-                # angle= math.atan2(other_y - vertex_y, other_x - vertex_x)
-                angle = (angle * 180) / PI
-
-               
-
-                # angle = math.atan2(other_x,other_y) - math.atan2(vertex_x,vertex_y)
-               
-
-                if angle <0:
-                    angle = 180 -abs(angle)
-
-                # if angle>0:
-                #     angle = abs(angle)
-                # else:
-                #     angle = 180-abs(angle)
-
-                # print(180+angle)
-
-                angle = round(angle,2)
-                
-                cv2.rectangle(imageContour,(5,0),(400,30),(0,0,0),-1)
-                cv2.putText(imageContour,"Angle : " + str(angle),(10,20),cv2.FONT_HERSHEY_COMPLEX,0.7,(0,0,255),2)
-
-# ---------------- END-----------
+                cv2.putText(imgContour, (str(angle)), (x, y),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                # print(angle)
 
 
-#Main Program
+vidIn = cv2.VideoCapture(0)
+# imgSample = cv2.imread('arrow_45.jpg')
 
-cap= cv2.VideoCapture(0)
-cv2.namedWindow('Parameters')
-cv2.resizeWindow('Parameters',640,100)
-cv2.createTrackbar('t1','Parameters',160,255,empty)
-cv2.createTrackbar('t2','Parameters',154,255,empty)
-cv2.createTrackbar('area','Parameters',1180,30000,empty)
-while True:
-    _, frame =  cap.read()
-    thresh1= cv2.getTrackbarPos('t1','Parameters')
-    thresh2= cv2.getTrackbarPos('t2','Parameters')
+cv2.namedWindow('image')
+cv2.createTrackbar('valueMin','image',48,255,nothing)
+cv2.createTrackbar('valueMax','image',58,255,nothing)
+
+while(True):
+    ret,img = vidIn.read()
+    # img = imgSample
+    imgBlur = cv2.GaussianBlur(img,(5,5),0)
+    imgGray = cv2.cvtColor(imgBlur, cv2.COLOR_BGR2GRAY)
+    imgContour = img
+
+    min=cv2.getTrackbarPos('valueMin','image')
+    max=cv2.getTrackbarPos('valueMax','image')
+
+    imgCanny = cv2.Canny(imgGray,min,max)
+
+    dilKernel = np.ones((5,5))
+    imgDil = cv2.dilate(imgCanny, dilKernel, iterations=1)
     
-    
-    imageContour = frame.copy()
+    getContours(imgDil,imgContour)
 
+    cv2.imshow('binary', imgContour)
 
-    hsv = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
-    lower_red = np.array([140,80,80])
-    upper_red = np.array([255,200,255])
-    mask = cv2.inRange(hsv,lower_red,upper_red) #filtering out red color objects using a range
-    kernel = np.ones((5,5),np.uint8) #declaring kernel for erosion,dilation,morphology
-    
-    erosion = cv2.erode(mask,kernel,iterations=1) #using erosion to reduce noise
-    # opening = cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernel) #eliminaing fake positives
-    # closing = cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel) #eliminating fake negatives
-
-
-
-
-
-
-    # kernel = np.ones((5,5))
-
-    edges = cv2.Canny(frame,thresh1,thresh2) #getting the edges
-
-    # imgDil = cv2.dilate(edges,kernel,iterations=1)
-
-    getcont(erosion,imageContour) #Finally runnng the main funcn to get corners,plot the arrow and put angle on image as text
-
-
-
-    #SHOWING FRAMES
-
-    # cv2.imshow('dil',imgDil)
-    cv2.imshow('cont',imageContour)
-    # cv2.imshow('edges',edges)
-    # cv2.imshow('original',frame)
-
-
-    k = cv2.waitKey(1)
-    if k==48:
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
-
-cv2.destroyAllWindows()
-cap.release()
