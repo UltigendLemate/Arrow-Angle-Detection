@@ -1,14 +1,20 @@
-# Image-Detection
+# Arrow-Detection
 
 ## Problem Statement:
-Build a software system which detects a RED arrow in a video feed captured by the web camera and prints the angle of its heading with respect to the vertical axis of the image. The system should work in varying backgrounds and varying lighting conditions. We will give you a step-by-step approach to do the same.
+Build a software system which detects a RED arrow in a video feed captured by the web camera and prints the angle of its head with respect to the vertical axis. The system should work in varying backgrounds and varying lighting conditions. Time limit - 1 week.
 
-## PROGRESS:
-### Day 1 
-Revised Python Basics - Watched a free code camp python in one shot at 2x on yt. Revised basic concepts, methods, functions, classes, dictionaries etc. Did 5 questions from codechef (EASY category) 
+## Summary
+The program captures the live feed and detects the arrow, makes an outline of the arrow and detects the angle made by that arrow with the vertical axis and displays it on the top left of the screen. The arrow has to be dark reddish in color. The program works for 3-4 meter range. Everything is coded in python and the program is efficient and accurate upto 90%. 
 
-### Day 2
-Learnt About Numpy - Watched numpy vid on youtube and practiced competitive questions using numpy to grasp better hold of the library methods. 
+## Approach
+I used OpenCV module in python to capture the live feed. Made a mask of everything reddish in the frame. Used edge detection functions to detect edges in the mask. Used erosion to clear off fake positives. Detected contours. if the number of corners in the closed contour is equal to 7 (because arrow has 7 corners), and the area occupied  by the figure is above 1000 units, then I drew the contour around it. Made a function that takes in the list of coordinates and returns the angle made by the arrow and displays on the top left of the screen.
 
-### Day 3
-Got introduced to opencv. Installed it.covered basic image loading, matplotlib functions,methods. Understood the basics of image analysis and how is a video split into frames and analysed. Revised git and github. Made a repo and Pushed code on github
+## Installation
+
+Just clone the repository
+
+```
+git clone https://github.com/UltigendLemate/Image-Detection.git
+
+```
+
