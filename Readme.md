@@ -14,7 +14,7 @@ I used OpenCV module in python to capture the live feed. Made a mask of everythi
 Just clone the repository
 
 ```
-git clone https://github.com/UltigendLemate/Image-Detection.git
+git clone https://github.com/UltigendLemate/Arrow-Angle-Detection.git
 ```
 
 Install Numpy next
