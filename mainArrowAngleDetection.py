@@ -90,8 +90,8 @@ def getcont(img,imgcnt):
     contours,hierarchy = cv2.findContours(img,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
         area= cv2.contourArea(cnt)
-        areamin= cv2.getTrackbarPos('area','Parameters')
-        if area>areamin:
+        # areamin= cv2.getTrackbarPos('area','Parameters')
+        if area>1180:
             cv2.drawContours(imgcnt,cnt, -1,(0,255,255),7)
             perimeter = cv2.arcLength(cnt,True)
             approx=  cv2.approxPolyDP(cnt,0.02*perimeter,True)
@@ -171,15 +171,15 @@ def getcont(img,imgcnt):
 #Main Program
 
 cap= cv2.VideoCapture(0)
-cv2.namedWindow('Parameters')
-cv2.resizeWindow('Parameters',640,100)
-cv2.createTrackbar('t1','Parameters',160,255,empty)
-cv2.createTrackbar('t2','Parameters',154,255,empty)
-cv2.createTrackbar('area','Parameters',1180,30000,empty)
+# cv2.namedWindow('Parameters')
+# cv2.resizeWindow('Parameters',640,100)
+# cv2.createTrackbar('t1','Parameters',160,255,empty)
+# cv2.createTrackbar('t2','Parameters',154,255,empty)
+# cv2.createTrackbar('area','Parameters',1180,30000,empty)
 while True:
     _, frame =  cap.read()
-    thresh1= cv2.getTrackbarPos('t1','Parameters')
-    thresh2= cv2.getTrackbarPos('t2','Parameters')
+    # thresh1= cv2.getTrackbarPos('t1','Parameters')
+    # thresh2= cv2.getTrackbarPos('t2','Parameters')
     
     
     imageContour = frame.copy()
@@ -202,7 +202,8 @@ while True:
 
     # kernel = np.ones((5,5))
 
-    edges = cv2.Canny(frame,thresh1,thresh2) #getting the edges
+    edges = cv2.Canny(frame,160,154) #getting the edges
+    # edges = cv2.Canny(frame,thresh1,thresh2) #getting the edges
 
     # imgDil = cv2.dilate(edges,kernel,iterations=1)
 
