@@ -15,6 +15,19 @@ Just clone the repository
 
 ```
 git clone https://github.com/UltigendLemate/Image-Detection.git
+```
+
+Install Numpy next
 
 ```
+pip install numpy
+```
+
+Finally Install Opencv
+
+```
+pip install opencv-python
+```
+
+You're ready to go! Just get an arrow and run the program!
 
